@@ -1,21 +1,21 @@
 
-Create simple application to save/update/delete tasks list.
+<p><strong>Create simple application to admin tasks list.</strong></p>
 
-Task is a string and can have 2 statuses (NEW, COMPLETED)
+<p>Task is a title, description and can have 2 statuses (NEW, COMPLETED)</p>
+<p>Title and description are mandatory fields.</p>
 
-Example text for task: Buy milk
+<p>1 create tasks table</p>
+<p>2 create controller for tasks</p>
+<p>3 add routes in web.php</p>
+<p>4 create a page to display list of tasks</p>
+<p>5 create a page to create new task</p>
+<p>6 create a page to edit task</p>
+<p>7 From list page each tasks can be Updated to status DONE or DELETED</p>
+<p>6 DONE task can not be DELETED</p>
+<p>7 DONE task are styled as line-through</p>
+<p>8 add filter to display ALL/NEW/DONE tasks</p>
 
-1 create tasks table
-2 create controller for tasks
-3 add routes in web.php
-4 create a page to display list of tasks and form to add new
-Layout its up to you
-5 each tasks can be Updated to status DONE or DELETED
-6 DONE task can not be DELETED
-7 Done tasks are styled as line-through
-8 Add filter to display ALL/NEW/DONE tasks
-
-BONUS
-on each action display modal confirmation OR if needed confirmation modal
-create Seeder
+<p><strong>BONUS</strong></p>
+<p>1 On each action display modal confirmation OR if needed confirmation modal</p>
+<p>2 Create Seeder</p>
 
