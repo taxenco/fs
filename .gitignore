@@ -2,5 +2,5 @@
 /storage/app/
 /storage/debugbar/
 /storage/framework/
+vendor
 .idea
-/vendor
