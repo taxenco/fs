@@ -1,4 +1,4 @@
-<h1>Welcome to Portwest initial test</h1>
+<!-- <h1>Welcome to Portwest initial test</h1>
 <p>This is open test, no time limit, please do your best</p>
 
 <p>After checkout if you have any issues with setup or cache errors pls check following steps</p>
@@ -13,7 +13,7 @@
     <li>php artisan config:clear</li>
     <li>php artisan cache:clear</li>
     <li>php artisan view:clear</li>
-</ul>
+</ul> -->
 
 <p><strong>Create simple application to admin tasks list.</strong></p>
 
