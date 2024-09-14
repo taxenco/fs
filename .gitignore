@@ -4,3 +4,4 @@
 /storage/framework/
 vendor
 .idea
+node_modules
