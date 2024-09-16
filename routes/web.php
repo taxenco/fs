@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', [\App\Http\Controllers\TaskController::class, 'index'])->name('task.index');
 
-Route::get('/create-task', [\App\Http\Controllers\TaskController::class, 'create'])->name('task.create');
+Route::get('/create-task-view', [\App\Http\Controllers\TaskController::class, 'createView'])->name('task.create');
+Route::post('/create-task', [\App\Http\Controllers\TaskController::class, 'store'])->name('task.create');
 
 Route::get('/edit-task/{id}', [\App\Http\Controllers\TaskController::class, 'edit'])->name('task.edit');
 

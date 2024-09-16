@@ -36,7 +36,7 @@ const pageComponents = {
 // Function to map route names to component names
 function resolvePageName(routeName) {
   const nameMap = {
-    'create-task': 'TaskCreate',
+    'create-task-view': 'TaskCreate',
     'edit-task': 'TaskEdit',
     '': 'TaskIndex', // Default or root route
   };

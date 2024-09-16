@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-gray-800">List of Tasks</h1>
         <!-- Create Task Button -->
         <Link
-          href="/create-task"
+          href="/create-task-view"
           class="text-blue-600 hover:underline flex items-center"
           prefetch
         >
