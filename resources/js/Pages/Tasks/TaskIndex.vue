@@ -1,7 +1,17 @@
 <template>
   <div class="flex flex-col md:flex-row p-4">
     <div class="w-full">
-      <h1 class="text-2xl font-bold mb-4 text-gray-800">List of Tasks</h1>
+      <!-- Header with Create Task Button -->
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">List of Tasks</h1>
+        <!-- Create Task Button -->
+        <Link
+          href="/create-task"
+          class="text-blue-600 hover:underline flex items-center"
+        >
+          <i class="fas fa-plus mr-2"></i> Create Task
+        </Link>
+      </div>
 
       <!-- Filter Buttons -->
       <div class="mb-4">
@@ -67,23 +77,32 @@
               </span>
             </td>
             <td class="px-4 py-2">
-              <!-- Show action buttons if the task is not 'DONE' -->
-              <div v-if="task.status !== 'DONE'">
-                <button
-                  @click="openModal(task, 'done')"
-                  class="text-green-600 hover:underline"
+              <div class="flex items-center">
+                <!-- Edit Task Link -->
+                <Link
+                  :href="`/edit-task/${task.id}`"
+                  class="text-blue-600 hover:underline mr-2 flex items-center"
                 >
-                  Mark as Done
-                </button>
-                <button
-                  @click="openModal(task, 'delete')"
-                  class="text-red-600 hover:underline ml-2"
-                >
-                  Delete
-                </button>
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </Link>
+                <!-- Show action buttons if the task is not 'DONE' -->
+                <div v-if="task.status !== 'DONE'" class="flex items-center">
+                  <button
+                    @click="openModal(task, 'done')"
+                    class="text-green-600 hover:underline ml-2 flex items-center"
+                  >
+                    <i class="fas fa-check mr-1"></i> Mark as Done
+                  </button>
+                  <button
+                    @click="openModal(task, 'delete')"
+                    class="text-red-600 hover:underline ml-2 flex items-center"
+                  >
+                    <i class="fas fa-trash mr-1"></i> Delete
+                  </button>
+                </div>
+                <!-- Display message when no actions are available -->
+                <span v-else class="text-gray-500 ml-2">No actions available</span>
               </div>
-              <!-- Display message when no actions are available -->
-              <span v-else class="text-gray-500">No actions available</span>
             </td>
           </tr>
         </tbody>
@@ -103,11 +122,13 @@
 </template>
 
 <script>
+import { Link } from '@inertiajs/inertia-vue3';
 import ConfirmationModal from '../../Components/ConfirmationModal.vue';
 
 export default {
   components: {
     ConfirmationModal,
+    Link,
   },
   data() {
     return {
