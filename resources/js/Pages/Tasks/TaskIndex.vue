@@ -132,30 +132,16 @@ export default {
     ConfirmationModal,
     Link,
   },
+  props: {
+    tasks: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
-      // List of tasks to display in the table
-      taskList: [
-        {
-          id: 1,
-          title: 'Task 1',
-          description: 'Description for Task 1',
-          status: 'IN_PROGRESS',
-        },
-        {
-          id: 2,
-          title: 'Task 2',
-          description: 'Description for Task 2',
-          status: 'DONE',
-        },
-        {
-          id: 3,
-          title: 'Task 3',
-          description: 'Description for Task 3',
-          status: 'IN_PROGRESS',
-        },
-        // Add more tasks as needed
-      ],
+      // Initialize taskList from the tasks prop
+      taskList: [...this.tasks],
       // Current filter status ('ALL', 'NEW', 'DONE')
       filterStatus: 'ALL',
       // Modal state
@@ -193,7 +179,8 @@ export default {
     openModal(task, actionType) {
       this.selectedTask = task;
       this.modalActionType = actionType;
-      this.modalTitle = actionType === 'delete' ? 'Delete Task' : 'Complete Task';
+      this.modalTitle =
+        actionType === 'delete' ? 'Delete Task' : 'Complete Task';
       this.modalMessage =
         actionType === 'delete'
           ? `Are you sure you want to delete "${task.title}"?`
@@ -205,31 +192,48 @@ export default {
      */
     confirmAction() {
       if (this.modalActionType === 'delete') {
-        this.updateTaskStatus(this.selectedTask, 'DELETED');
+        this.deleteTask(this.selectedTask);
       } else if (this.modalActionType === 'done') {
-        this.updateTaskStatus(this.selectedTask, 'DONE');
+        this.markTaskAsDone(this.selectedTask);
       }
       this.isModalVisible = false;
     },
     /**
-     * Updates the status of a given task.
+     * Sends a request to delete the task.
+     *
+     * @param {Object} task - The task object to delete.
+     */
+    deleteTask(task) {
+      this.$inertia
+        .delete(`/tasks/${task.id}`)
+        .then(() => {
+          // Remove the task from the local taskList
+          this.taskList = this.taskList.filter((t) => t.id !== task.id);
+        })
+        .catch((error) => {
+          // Handle error
+          console.error('Error deleting task:', error);
+        });
+    },
+    /**
+     * Sends a request to mark the task as done.
      *
      * @param {Object} task - The task object to update.
-     * @param {string} newStatus - The new status to assign ('DONE' or 'DELETED').
      */
-    updateTaskStatus(task, newStatus) {
-      // Prevent deletion of tasks that are already marked as 'DONE'
-      if (task.status === 'DONE' && newStatus === 'DELETED') {
-        return;
-      }
-
-      // Update the task's status
-      task.status = newStatus;
-
-      // If the new status is 'DELETED', remove the task from the task list
-      if (newStatus === 'DELETED') {
-        this.taskList = this.taskList.filter((t) => t.id !== task.id);
-      }
+    markTaskAsDone(task) {
+      this.$inertia
+        .put(`/tasks/${task.id}/mark-as-done`)
+        .then(() => {
+          // Update the task status locally
+          const index = this.taskList.findIndex((t) => t.id === task.id);
+          if (index !== -1) {
+            this.taskList[index].status = 'DONE';
+          }
+        })
+        .catch((error) => {
+          // Handle error
+          console.error('Error marking task as done:', error);
+        });
     },
     /**
      * Sets the current filter status.
