@@ -1,8 +1,12 @@
 <template>
   <div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6">
     <h1 class="text-3xl font-semibold mb-6 text-gray-900">Create Task</h1>
+    
+    <!-- Show loader when creating task -->
+    <Loader v-if="isLoading" />
+
     <!-- Form for creating a new task -->
-    <form @submit.prevent="createTask">
+    <form v-if="!isLoading" @submit.prevent="createTask">
       <div class="mb-6">
         <label class="block text-lg font-medium text-gray-700 mb-2">Title</label>
         <input
@@ -23,7 +27,7 @@
           required
         ></textarea>
       </div>
-      <div class="flex justify-end">
+      <div class="flex justify-center">
         <button
           type="submit"
           class="bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
@@ -37,17 +41,22 @@
 
 <script>
 import axios from 'axios';
+import Loader from '../../Components/Loader.vue';
 
 export default {
   name: 'CreateTask',
+  components: { Loader },
   data() {
     return {
       title: '',
       description: '',
+      isLoading: false, // Track loading state
     };
   },
   methods: {
     async createTask() {
+      this.isLoading = true; // Show loader
+
       try {
         // Make POST request to create the task
         const response = await axios.post('/create-task', {
@@ -62,7 +71,7 @@ export default {
       } catch (error) {
         console.error('Error creating task:', error);
         // Optionally handle errors (e.g., show error messages to the user)
-      }
+      } 
     },
   },
 };
