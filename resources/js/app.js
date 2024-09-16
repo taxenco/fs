@@ -14,10 +14,25 @@ InertiaProgress.init({
   showSpinner: true,
 })
 
+// Function to map route names to component names
+function resolvePageName(routeName) {
+  const nameMap = {
+    'create-task': 'TaskCreate',
+    'edit-task': 'TaskEdit',
+    '': 'TaskIndex' // Default or root route
+  };
+  return nameMap[routeName] || routeName;
+}
+
 createInertiaApp({
   resolve: async (name) => {
-    const pages = import.meta.glob('./Pages/**/*.vue')
-    const page = await pages[`./Pages/${name}.vue`]()
+    // Use the resolvePageName function to get the correct component name
+    const pageName = resolvePageName(name);
+    const pages = import.meta.glob('./Pages/Tasks/**/*.vue')
+    const page = await pages[`./Pages/Tasks/${pageName}.vue`]()
+    if (!page) {
+      throw new Error(`Page component for "${name}" not found`)
+    }
     page.default.layout = page.default.layout || MainLayout
     return page
   },

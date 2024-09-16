@@ -9,6 +9,22 @@ class TaskController extends Controller
 {
     public function index()
     {
-        return inertia('Tasks/TaskIndex');
+        // Fetch all tasks from the database
+        // $tasks = Task::all();
+
+        // Return the view with the tasks data
+        return inertia('TaskIndex');
+    }
+
+    public function create()
+    {
+        // Return the view for creating a new task
+        return inertia('TaskCreate');
+    }
+
+    public function edit()
+    {
+        // Return the view for editing an existing task with the task data
+        return inertia('TaskEdit');
     }
 }
