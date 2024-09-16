@@ -8,12 +8,24 @@ import VueClickAway from 'vue3-click-away';
 import mitt from 'mitt';
 import '@fortawesome/fontawesome-free/css/all.css';
 
+// Import page components at the top
+import TaskIndex from './Pages/Tasks/TaskIndex.vue';
+import TaskCreate from './Pages/Tasks/TaskCreate.vue';
+import TaskEdit from './Pages/Tasks/TaskEdit.vue';
+
 InertiaProgress.init({
   delay: 0,
   color: '#29d',
   includeCSS: true,
   showSpinner: true,
 });
+
+// Map route names to components
+const pageComponents = {
+  'TaskIndex': TaskIndex,
+  'TaskCreate': TaskCreate,
+  'TaskEdit': TaskEdit,
+};
 
 // Function to map route names to component names
 function resolvePageName(routeName) {
@@ -26,16 +38,17 @@ function resolvePageName(routeName) {
 }
 
 createInertiaApp({
-  resolve: async (name) => {
-    // Use the resolvePageName function to get the correct component name
+  resolve: (name) => {
+    // Use the resolvePageName function to get the component name
     const pageName = resolvePageName(name);
-    const pages = import.meta.glob('./Pages/Tasks/**/*.vue');
-    const page = await pages[`./Pages/Tasks/${pageName}.vue`]();
-    if (!page) {
+    const pageComponent = pageComponents[pageName];
+
+    if (!pageComponent) {
       throw new Error(`Page component for "${name}" not found`);
     }
-    page.default.layout = page.default.layout || MainLayout;
-    return page;
+
+    pageComponent.layout = pageComponent.layout || MainLayout;
+    return pageComponent;
   },
   setup({ el, App, props, plugin }) {
     const appInstance = createApp({ render: () => h(App, props) })

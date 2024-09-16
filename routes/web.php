@@ -19,7 +19,7 @@ Route::get('/', [\App\Http\Controllers\TaskController::class, 'index'])->name('t
 
 Route::get('/create-task', [\App\Http\Controllers\TaskController::class, 'create'])->name('task.create');
 
-Route::get('/edit-task', [\App\Http\Controllers\TaskController::class, 'edit'])->name('task.edit');
+Route::get('/edit-task/{id}', [\App\Http\Controllers\TaskController::class, 'edit'])->name('task.edit');
 
 
 

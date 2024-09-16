@@ -8,6 +8,7 @@
         <Link
           href="/create-task"
           class="text-blue-600 hover:underline flex items-center"
+          prefetch
         >
           <i class="fas fa-plus mr-2"></i> Create Task
         </Link>
@@ -82,6 +83,7 @@
                 <Link
                   :href="`/edit-task/${task.id}`"
                   class="text-blue-600 hover:underline mr-2 flex items-center"
+                  prefetch
                 >
                   <i class="fas fa-edit mr-1"></i> Edit
                 </Link>

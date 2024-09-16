@@ -22,7 +22,7 @@ class TaskController extends Controller
         return inertia('TaskCreate');
     }
 
-    public function edit()
+    public function edit($task)
     {
         // Return the view for editing an existing task with the task data
         return inertia('TaskEdit');
