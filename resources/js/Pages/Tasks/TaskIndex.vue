@@ -52,16 +52,17 @@
             v-for="task in filteredTasks"
             :key="task.id"
             class="border-b hover:bg-blue-50"
+            :class="{ 'bg-gray-100': task.status === 'DELETED' }"
           >
             <td
               class="px-4 py-2"
-              :class="{ 'line-through text-gray-500': task.status === 'DONE' }"
+              :class="{ 'line-through text-gray-500': task.status === 'DONE' || task.status === 'DELETED' }"
             >
               {{ task.title }}
             </td>
             <td
               class="px-4 py-2"
-              :class="{ 'line-through text-gray-500': task.status === 'DONE' }"
+              :class="{ 'line-through text-gray-500': task.status === 'DONE' || task.status === 'DELETED' }"
             >
               {{ task.description }}
             </td>
@@ -83,12 +84,16 @@
                 <Link
                   :href="`/edit-task/${task.id}`"
                   class="text-blue-600 hover:underline mr-2 flex items-center"
+                  v-if="task.status !== 'DELETED'"
                   prefetch
                 >
                   <i class="fas fa-edit mr-1"></i> Edit
                 </Link>
-                <!-- Show action buttons if the task is not 'DONE' -->
-                <div v-if="task.status !== 'DONE'" class="flex items-center">
+                <!-- Show action buttons if the task is neither 'DONE' nor 'DELETED' -->
+                <div
+                  v-if="task.status !== 'DONE' && task.status !== 'DELETED'"
+                  class="flex items-center"
+                >
                   <button
                     @click="openModal(task, 'done')"
                     class="text-green-600 hover:underline ml-2 flex items-center"
@@ -120,17 +125,30 @@
       @confirm="confirmAction"
       @cancel="isModalVisible = false"
     />
+
+    <!-- Toast Notifications -->
+    <Toast
+      v-if="toastData"
+      :title="toastData.title"
+      :message="toastData.message"
+      :type="toastData.type"
+      :duration="3000"
+    />
   </div>
 </template>
 
 <script>
+import axios from 'axios'; // Import Axios for making API requests
 import { Link } from '@inertiajs/inertia-vue3';
 import ConfirmationModal from '../../Components/ConfirmationModal.vue';
+
+import Toast from '../../Components/Toast.vue';
 
 export default {
   components: {
     ConfirmationModal,
     Link,
+    Toast
   },
   props: {
     tasks: {
@@ -140,29 +158,24 @@ export default {
   },
   data() {
     return {
-      // Initialize taskList from the tasks prop
       taskList: [...this.tasks],
-      // Current filter status ('ALL', 'NEW', 'DONE')
       filterStatus: 'ALL',
-      // Modal state
       isModalVisible: false,
       modalTitle: '',
       modalMessage: '',
       modalActionType: '', // 'done' or 'delete'
       selectedTask: null,
+      toastData: null,
     };
   },
   computed: {
-    /**
-     * Returns a filtered list of tasks based on the selected filter.
-     *
-     * @returns {Array} - The filtered list of tasks.
-     */
     filteredTasks() {
       if (this.filterStatus === 'ALL') {
         return this.taskList;
       } else if (this.filterStatus === 'NEW') {
-        return this.taskList.filter((task) => task.status !== 'DONE');
+        return this.taskList.filter(
+          (task) => task.status !== 'DONE' && task.status !== 'DELETED'
+        );
       } else if (this.filterStatus === 'DONE') {
         return this.taskList.filter((task) => task.status === 'DONE');
       }
@@ -170,12 +183,6 @@ export default {
     },
   },
   methods: {
-    /**
-     * Opens the confirmation modal for a specific action.
-     *
-     * @param {Object} task - The task object.
-     * @param {string} actionType - The action type ('done' or 'delete').
-     */
     openModal(task, actionType) {
       this.selectedTask = task;
       this.modalActionType = actionType;
@@ -187,9 +194,6 @@ export default {
           : `Are you sure you want to mark "${task.title}" as done?`;
       this.isModalVisible = true;
     },
-    /**
-     * Confirms the action after modal confirmation.
-     */
     confirmAction() {
       if (this.modalActionType === 'delete') {
         this.deleteTask(this.selectedTask);
@@ -198,51 +202,45 @@ export default {
       }
       this.isModalVisible = false;
     },
-    /**
-     * Sends a request to delete the task.
-     *
-     * @param {Object} task - The task object to delete.
-     */
     deleteTask(task) {
-      this.$inertia
-        .delete(`/tasks/${task.id}`)
-        .then(() => {
-          // Remove the task from the local taskList
-          this.taskList = this.taskList.filter((t) => t.id !== task.id);
+      axios
+        .delete(`/delete-task/${task.id}`)
+        .then((response) => {
+          // Set the new task list with the updated data from the server
+          this.taskList = response.data.tasks;
+          // Show success toast notification
+          this.showToast('success', 'Success', 'Task deleted successfully.');
         })
         .catch((error) => {
-          // Handle error
           console.error('Error deleting task:', error);
+          this.showToast('error', 'Error', 'Failed to delete the task.');
         });
     },
-    /**
-     * Sends a request to mark the task as done.
-     *
-     * @param {Object} task - The task object to update.
-     */
     markTaskAsDone(task) {
-      this.$inertia
+      axios
         .put(`/tasks/${task.id}/mark-as-done`)
         .then(() => {
-          // Update the task status locally
           const index = this.taskList.findIndex((t) => t.id === task.id);
           if (index !== -1) {
             this.taskList[index].status = 'DONE';
           }
+          // Show success toast notification
+          this.showToast('success', 'Success', 'Task marked as done.');
         })
         .catch((error) => {
-          // Handle error
           console.error('Error marking task as done:', error);
+          this.showToast('error', 'Error', 'Failed to mark the task as done.');
         });
     },
-    /**
-     * Sets the current filter status.
-     *
-     * @param {string} status - The filter status to set ('ALL', 'NEW', 'DONE').
-     */
     setFilter(status) {
       this.filterStatus = status;
     },
+    showToast(type, title, message) {
+      this.toastData = { type, title, message };
+      setTimeout(() => {
+        this.toastData = null;
+      }, 3000);
+    }
   },
 };
 </script>

@@ -8,6 +8,12 @@ import VueClickAway from 'vue3-click-away';
 import mitt from 'mitt';
 import '@fortawesome/fontawesome-free/css/all.css';
 
+import axios from 'axios';
+
+// Fetch the CSRF token from the HTML meta tag and set it as a common Axios header
+axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+
 // Import page components at the top
 import TaskIndex from './Pages/Tasks/TaskIndex.vue';
 import TaskCreate from './Pages/Tasks/TaskCreate.vue';

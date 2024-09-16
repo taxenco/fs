@@ -21,6 +21,7 @@ Route::get('/create-task', [\App\Http\Controllers\TaskController::class, 'create
 
 Route::get('/edit-task/{id}', [\App\Http\Controllers\TaskController::class, 'edit'])->name('task.edit');
 
+Route::delete('/delete-task/{id}', [\App\Http\Controllers\TaskController::class, 'delete'])->name('task.delete');
 
 
 

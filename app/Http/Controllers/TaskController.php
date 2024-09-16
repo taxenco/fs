@@ -27,4 +27,16 @@ class TaskController extends Controller
         // Return the view for editing an existing task with the task data
         return inertia('TaskEdit');
     }
+
+    public function delete($id)
+    {
+        $task = Task::findOrFail($id);
+        $task->delete();
+    
+        return response()->json([
+            'message' => 'Task deleted successfully.',
+            'tasks' => Task::all() // Assuming you want to return all tasks after deletion
+        ]);
+    }
+    
 }
