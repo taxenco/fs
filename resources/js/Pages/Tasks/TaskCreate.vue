@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6">
-    <h1 class="text-3xl font-semibold mb-6 text-gray-900">Create Task</h1>
-    
+    <h1 class="text-3xl font-semibold mb-6 text-gray-900 text-center">Create Task</h1>
+
     <!-- Show loader when creating task -->
     <Loader v-if="isLoading" />
 
@@ -27,7 +27,14 @@
           required
         ></textarea>
       </div>
-      <div class="flex justify-center">
+      <div class="flex justify-between">
+        <button
+          type="button"
+          @click="goBack"
+          class="bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
+        >
+          Go Back
+        </button>
         <button
           type="submit"
           class="bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
@@ -71,42 +78,14 @@ export default {
       } catch (error) {
         console.error('Error creating task:', error);
         // Optionally handle errors (e.g., show error messages to the user)
-      } 
+      } finally {
+        this.isLoading = false; // Hide loader after request
+      }
+    },
+    goBack() {
+      // Redirect back to the home page
+      this.$inertia.visit('/');
     },
   },
 };
 </script>
-
-<style scoped>
-/* Base styles for the component */
-body {
-  background-color: #f9f9f9;
-  font-family: 'Arial', sans-serif;
-}
-
-h1 {
-  color: #343a40;
-}
-
-/* Input and textarea styling */
-input,
-textarea {
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #a0a0a0;
-}
-
-/* Button styling */
-button {
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-button:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-</style>
