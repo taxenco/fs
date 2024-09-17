@@ -141,7 +141,6 @@
 import axios from 'axios'; // Import Axios for making API requests
 import { Link } from '@inertiajs/inertia-vue3';
 import ConfirmationModal from '../../Components/ConfirmationModal.vue';
-
 import Toast from '../../Components/Toast.vue';
 
 export default {
@@ -169,6 +168,10 @@ export default {
     };
   },
   computed: {
+    /**
+     * Filter tasks based on the selected filter status.
+     * @returns {Array} The filtered list of tasks.
+     */
     filteredTasks() {
       if (this.filterStatus === 'ALL') {
         return this.taskList;
@@ -183,6 +186,11 @@ export default {
     },
   },
   methods: {
+    /**
+     * Open the confirmation modal for a specific task action.
+     * @param {Object} task - The task to be acted upon.
+     * @param {string} actionType - The type of action ('done' or 'delete').
+     */
     openModal(task, actionType) {
       this.selectedTask = task;
       this.modalActionType = actionType;
@@ -194,6 +202,10 @@ export default {
           : `Are you sure you want to mark "${task.title}" as done?`;
       this.isModalVisible = true;
     },
+    
+    /**
+     * Confirm the action selected in the modal.
+     */
     confirmAction() {
       if (this.modalActionType === 'delete') {
         this.deleteTask(this.selectedTask);
@@ -202,6 +214,11 @@ export default {
       }
       this.isModalVisible = false;
     },
+    
+    /**
+     * Delete a task from the task list.
+     * @param {Object} task - The task to be deleted.
+     */
     deleteTask(task) {
       axios
         .delete(`/delete-task/${task.id}`)
@@ -216,29 +233,45 @@ export default {
           this.showToast('error', 'Error', 'Failed to delete the task.');
         });
     },
+    
+    /**
+     * Mark a task as done.
+     * @param {Object} task - The task to be marked as done.
+     */
     markTaskAsDone(task) {
-        const index = this.taskList.findIndex((t) => t.id === task.id);
-        
-        if (index !== -1) {
-          this.taskList[index].status = 'DONE';
-        }
+      const index = this.taskList.findIndex((t) => t.id === task.id);
+      
+      if (index !== -1) {
+        this.taskList[index].status = 'DONE';
+      }
 
-        axios.put(`/edit-task/${task.id}/`, { 
-            title: task.title, 
-            description: task.description, 
-            status: 'DONE' 
-          })
-          .then(() => {
-            // Handle success if needed
-          })
-          .catch((error) => {
-            // Handle error
-          });
-      },
+      axios.put(`/edit-task/${task.id}/`, { 
+          title: task.title, 
+          description: task.description, 
+          status: 'DONE' 
+        })
+        .then(() => {
+          // Handle success if needed
+        })
+        .catch((error) => {
+          // Handle error
+        });
+    },
 
+    /**
+     * Set the filter status for displaying tasks.
+     * @param {string} status - The status to filter tasks by.
+     */
     setFilter(status) {
       this.filterStatus = status;
     },
+    
+    /**
+     * Show a toast notification.
+     * @param {string} type - The type of toast (e.g., 'success', 'error').
+     * @param {string} title - The title of the toast notification.
+     * @param {string} message - The message of the toast notification.
+     */
     showToast(type, title, message) {
       this.toastData = { type, title, message };
       setTimeout(() => {

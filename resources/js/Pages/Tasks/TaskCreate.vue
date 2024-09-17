@@ -55,12 +55,18 @@ export default {
   components: { Loader },
   data() {
     return {
-      title: '',
-      description: '',
+      title: '', // The title of the new task
+      description: '', // The description of the new task
       isLoading: false, // Track loading state
     };
   },
   methods: {
+    /**
+     * Create a new task by sending a POST request to the server.
+     * Shows a loading state while the request is being processed.
+     * On success, redirects to the main task list page.
+     * Logs an error message to the console if the request fails.
+     */
     async createTask() {
       this.isLoading = true; // Show loader
       try {
@@ -69,11 +75,18 @@ export default {
           title: this.title,
           description: this.description,
         });
+        // Redirect to the main task list page upon successful creation
         this.$inertia.visit('/');
       } catch (error) {
         console.error('Error creating task:', error);
+      } finally {
+        this.isLoading = false; // Hide loader after processing
       }
     },
+    
+    /**
+     * Redirect back to the home page.
+     */
     goBack() {
       // Redirect back to the home page
       this.$inertia.visit('/');
@@ -81,3 +94,4 @@ export default {
   },
 };
 </script>
+

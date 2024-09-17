@@ -80,6 +80,11 @@ export default {
   name: 'UpdateTask',
   components: { Loader },
   props: {
+    /**
+     * The task object to be updated.
+     * @type {Object}
+     * @required
+     */
     task: {
       type: Object,
       required: true,
@@ -93,7 +98,12 @@ export default {
       status: props.task.status || 'NEW',
     });
 
-    // Submit handler
+    /**
+     * Submit the form to update the task.
+     * Sends a PUT request to the server with the task data.
+     * On success, redirects to the task list page.
+     * On error, logs the error message to the console.
+     */
     const submit = () => {
       form.put(`/edit-task/${props.task.id}`, {
         onSuccess: () => {
@@ -107,7 +117,10 @@ export default {
       });
     };
 
-    // Go back handler
+    /**
+     * Navigate back to the previous page.
+     * Redirects to the main task list page.
+     */
     const goBack = () => {
       Inertia.visit('/');
     };
