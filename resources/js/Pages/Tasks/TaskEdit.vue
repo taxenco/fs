@@ -1,97 +1,140 @@
 <template>
-    <div class="p-4">
-      <h1 class="text-2xl font-bold mb-4 text-gray-800">Edit Task</h1>
-      <!-- Form for editing an existing task -->
-      <form v-if="task" @submit.prevent="updateTask">
-        <div class="mb-4">
-          <label class="block text-gray-700">Title</label>
-          <input
-            v-model="task.title"
-            type="text"
-            class="w-full px-3 py-2 border rounded"
-            required
-          />
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700">Description</label>
-          <textarea
-            v-model="task.description"
-            class="w-full px-3 py-2 border rounded"
-            required
-          ></textarea>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700">Status</label>
-          <select v-model="task.status" class="w-full px-3 py-2 border rounded">
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="DONE">Done</option>
-          </select>
-        </div>
+  <div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6">
+    <h1 class="text-3xl font-semibold mb-6 text-gray-900 text-center">Edit Task</h1>
+
+    <!-- Show loader when submitting changes -->
+    <Loader v-if="form.processing" />
+
+    <!-- Form for editing the task -->
+    <form v-if="!form.processing" @submit.prevent="submit">
+      <!-- Title input -->
+      <div class="mb-6">
+        <label class="block text-lg font-medium text-gray-700 mb-2" for="title">Title</label>
+        <input 
+          type="text" 
+          v-model="form.title" 
+          id="title" 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+          :class="{ 'border-red-500': form.errors.title }"
+          placeholder="Enter task title"
+          required
+        />
+        <div v-if="form.errors.title" class="text-red-500 text-sm mt-2">{{ form.errors.title }}</div>
+      </div>
+
+      <!-- Description input -->
+      <div class="mb-6">
+        <label class="block text-lg font-medium text-gray-700 mb-2" for="description">Description</label>
+        <textarea 
+          v-model="form.description" 
+          id="description" 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+          :class="{ 'border-red-500': form.errors.description }"
+          rows="4"
+          placeholder="Enter task description"
+          required
+        ></textarea>
+        <div v-if="form.errors.description" class="text-red-500 text-sm mt-2">{{ form.errors.description }}</div>
+      </div>
+
+      <!-- Status select -->
+      <div class="mb-6">
+        <label class="block text-lg font-medium text-gray-700 mb-2" for="status">Status</label>
+        <select 
+          v-model="form.status" 
+          id="status" 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+        >
+          <option value="NEW">New</option>
+          <option value="DONE">Done</option>
+        </select>
+        <div v-if="form.errors.status" class="text-red-500 text-sm mt-2">{{ form.errors.status }}</div>
+      </div>
+
+      <!-- Buttons for saving changes or going back -->
+      <div class="flex justify-between space-x-4">
+        <button
+          type="button"
+          @click="goBack"
+          class="bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
+        >
+          Go Back
+        </button>
         <button
           type="submit"
-          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          class="bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
         >
-          Update Task
+          Save Changes
         </button>
-      </form>
-      <p v-else>Loading task...</p>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'EditTask',
-    props: {
-      id: {
-        type: [String, Number],
-        required: true,
-      },
-    },
-    data() {
-      return {
-        task: null,
-      };
-    },
-    created() {
-      this.fetchTask();
-    },
-    methods: {
-      fetchTask() {
-        // Get the task ID from the props
-        const taskId = this.id;
-        // Fetch the task data based on the ID
-        // Replace this with actual data fetching logic
-        const taskList = [
-          {
-            id: 1,
-            title: 'Task 1',
-            description: 'Description for Task 1',
-            status: 'IN_PROGRESS',
-          },
-          {
-            id: 2,
-            title: 'Task 2',
-            description: 'Description for Task 2',
-            status: 'DONE',
-          },
-          {
-            id: 3,
-            title: 'Task 3',
-            description: 'Description for Task 3',
-            status: 'IN_PROGRESS',
-          },
-        ];
-        this.task = taskList.find((task) => task.id === parseInt(taskId));
-      },
-      updateTask() {
-        // Implement the logic to update the task
-        // For now, we'll just log the updated task
-        console.log('Updated Task:', this.task);
-        // Navigate to the task list after updating using Inertia
-        this.$inertia.visit('/');
-      },
-    },
-  };
-  </script>
+      </div>
+    </form>
+  </div>
+</template>
 
-  
+<script>
+import { useForm } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/inertia';
+import Loader from '../../Components/Loader.vue';
+
+export default {
+  name: 'UpdateTask',
+  components: { Loader },
+  props: {
+    task: {
+      type: Object,
+      required: true,
+    },
+  },
+  setup(props) {
+    // Initialize the form with useForm
+    const form = useForm({
+      title: props.task.title || '',
+      description: props.task.description || '',
+      status: props.task.status || 'NEW',
+    });
+
+    // Submit handler
+    const submit = () => {
+      form.put(`/edit-task/${props.task.id}`, {
+        onSuccess: () => {
+          // Redirect to the desired page, e.g., task list
+          Inertia.visit('/');
+        },
+        onError: () => {
+          // Optionally handle errors globally
+          console.error('There were errors updating the task.');
+        },
+      });
+    };
+
+    // Go back handler
+    const goBack = () => {
+      Inertia.visit('/');
+    };
+
+    return { form, submit, goBack };
+  },
+};
+</script>
+
+<style scoped>
+.input-error {
+  border-color: red;
+}
+
+.text-red-500 {
+  color: #f56565;
+}
+
+.btn {
+  padding: 0.75rem 1.25rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+</style>

@@ -4,24 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    public function index()
-    {
-        // Fetch all tasks from the database
-        $tasks = Task::all();
-    
-        // Return the view with the tasks data
-        return inertia('TaskIndex', ['tasks' => $tasks]);
-    }
-    
-    public function createView()
-    {
-        // Return the view for creating a new task
-        return inertia('TaskCreate');
-    }
-
+    /**
+     * Store a newly created task in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -40,14 +32,13 @@ class TaskController extends Controller
         return redirect('/')
             ->with('success', 'Task created successfully.');
     }
-    
-    
-    public function edit($task)
-    {
-        // Return the view for editing an existing task with the task data
-        return inertia('TaskEdit');
-    }
 
+    /**
+     * Remove the specified task from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         $task = Task::findOrFail($id);
@@ -55,8 +46,43 @@ class TaskController extends Controller
     
         return response()->json([
             'message' => 'Task deleted successfully.',
-            'tasks' => Task::all() // Assuming you want to return all tasks after deletion
+            'tasks' => Task::all() 
         ]);
     }
-    
+
+    /**
+     * Update the specified task in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function edit(Request $request, $id)
+    {
+        // Validate incoming data
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:NEW,DONE',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Find the task by ID
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+
+        // Update the task with the validated data
+        $task->title = $request->input('title');
+        $task->description = $request->input('description');
+        $task->status = $request->input('status');
+        $task->save();
+
+        return redirect('/')->with('success', 'Task updated successfully.');   
+    }
 }

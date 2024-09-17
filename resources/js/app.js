@@ -37,7 +37,7 @@ const pageComponents = {
 function resolvePageName(routeName) {
   const nameMap = {
     'create-task-view': 'TaskCreate',
-    'edit-task': 'TaskEdit',
+    'edit-task-view': 'TaskEdit',
     '': 'TaskIndex', // Default or root route
   };
   return nameMap[routeName] || routeName;

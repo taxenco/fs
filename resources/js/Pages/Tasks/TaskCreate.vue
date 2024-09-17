@@ -63,23 +63,15 @@ export default {
   methods: {
     async createTask() {
       this.isLoading = true; // Show loader
-
       try {
         // Make POST request to create the task
         const response = await axios.post('/create-task', {
           title: this.title,
           description: this.description,
         });
-
-        console.log('Task Created:', response.data);
-
-        // Optionally redirect to another page after the task is created
         this.$inertia.visit('/');
       } catch (error) {
         console.error('Error creating task:', error);
-        // Optionally handle errors (e.g., show error messages to the user)
-      } finally {
-        this.isLoading = false; // Hide loader after request
       }
     },
     goBack() {

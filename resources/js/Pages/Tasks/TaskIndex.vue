@@ -82,7 +82,7 @@
               <div class="flex items-center">
                 <!-- Edit Task Link -->
                 <Link
-                  :href="`/edit-task/${task.id}`"
+                  :href="`/edit-task-view/${task.id}`"
                   class="text-blue-600 hover:underline mr-2 flex items-center"
                   v-if="task.status !== 'DELETED'"
                   prefetch
@@ -217,21 +217,25 @@ export default {
         });
     },
     markTaskAsDone(task) {
-      axios
-        .put(`/tasks/${task.id}/mark-as-done`)
-        .then(() => {
-          const index = this.taskList.findIndex((t) => t.id === task.id);
-          if (index !== -1) {
-            this.taskList[index].status = 'DONE';
-          }
-          // Show success toast notification
-          this.showToast('success', 'Success', 'Task marked as done.');
-        })
-        .catch((error) => {
-          console.error('Error marking task as done:', error);
-          this.showToast('error', 'Error', 'Failed to mark the task as done.');
-        });
-    },
+        const index = this.taskList.findIndex((t) => t.id === task.id);
+        
+        if (index !== -1) {
+          this.taskList[index].status = 'DONE';
+        }
+
+        axios.put(`/edit-task/${task.id}/`, { 
+            title: task.title, 
+            description: task.description, 
+            status: 'DONE' 
+          })
+          .then(() => {
+            // Handle success if needed
+          })
+          .catch((error) => {
+            // Handle error
+          });
+      },
+
     setFilter(status) {
       this.filterStatus = status;
     },
